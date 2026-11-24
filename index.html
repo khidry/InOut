@@ -26,7 +26,7 @@ footer a{cursor:pointer;color:var(--b);margin:0 6px}
 <nav id="nv"><a data-v="home">🏠<br>اللوحة</a><a data-v="log">📋<br>السجل</a><a data-v="rep">📊<br>التقارير</a><a data-v="set">⚙️<br>الإعدادات</a></nav>
 <div id="md" hidden><div class="box"><button class="x" onclick="md.hidden=1">✕</button><div id="mb"></div></div></div>
 <script>
-const V='2.1.0',KEY='sa2',TZ='Asia/Riyadh',DEF='https://script.google.com/macros/s/AKfycbxKW4COmX3xqFt7g7HdpHGp4RYPUsjBW0JNHTvYGi3yGdKQXk_ERXbuCa7lQnVDP6Py/exec',$=i=>document.getElementById(i);
+const V='2.1.1',KEY='sa2',TZ='Asia/Riyadh',DEF='https://script.google.com/macros/s/AKfycbxKW4COmX3xqFt7g7HdpHGp4RYPUsjBW0JNHTvYGi3yGdKQXk_ERXbuCa7lQnVDP6Py/exec',$=i=>document.getElementById(i);
 let L=Object.assign({url:'',th:'l',tok:{},cred:{},last:''},JSON.parse(localStorage.getItem(KEY)||'{}')),cfg=null,adm=false,pw='',data=null,view='home',dp;
 const save=()=>localStorage.setItem(KEY,JSON.stringify(L));if(!L.url)L.url=DEF;
 {const u=new URLSearchParams(location.search).get('u');if(u&&u!=L.url&&/^https:\/\/script\.google\.com\//.test(u)&&(!L.url||confirm('تغيير رابط السيرفر إلى الرابط الجديد؟'))){L.url=u;save()}}
@@ -55,7 +55,7 @@ async function punch(t){const id=$('se').value,m=x=>$('pm').innerHTML=x;if(!L.to
  try{await bio(id)}catch{return m('<span class=no>فشل التحقق بالبصمة</span>')}
  m('جارٍ التسجيل على السيرفر...');const r=await api('punch',{id,tok:L.tok[id],t,code,pos});
  m(`<span class=${r.ok?'ok':'no'}>${r.ok?'✔ ':''}${esc(r.msg)}</span>`);if(r.ok)$('gc').value=''}
-async function askAdmin(){if(adm)return true;const p=prompt('كلمة سر المدير');if(!p)return false;pw=p;adm=true;if(await ladm()){render();return true}pw='';adm=false;return false}
+async function askAdmin(){if(adm)return true;const p=(prompt('كلمة سر المدير')||'').trim();if(!p)return false;pw=p;adm=true;if(await ladm()){render();return true}pw='';adm=false;return false}
 function home(){if(!L.url)return $('v').innerHTML='<div class=card>مرحباً 👋<br>اذهب إلى «الإعدادات» وألصق رابط السيرفر (أو افتح الرابط الذي أرسله لك المدير).</div>';
  if(!cfg)return $('v').innerHTML='<div class=card>جارٍ التحميل...</div>';if(cfg.err)return $('v').innerHTML=`<div class=card class=no>${esc(cfg.err)}<br><button onclick="boot()">إعادة المحاولة</button></div>`;
  let h='';if(!cfg.emps.length)h='<div class=card>لا يوجد موظفون بعد. سجّل دخول المدير من الإعدادات وأضفهم.</div>';
@@ -100,7 +100,7 @@ async function setU(){const u=$('su').value.trim();if(!/^https:\/\/script\.googl
 async function addL(){try{const c=(await gp()).coords,n=prompt('اسم الموقع'),r=+prompt('نصف القطر بالمتر (مثلاً 80)','80');if(n&&r>=20){const x=await adp('a_loc',{loc:{n,lat:c.latitude,lng:c.longitude,r}});if(!x.ok)alert(x.msg);await ladm();setp()}}catch{alert('تعذر تحديد الموقع')}}
 const dloc=async id=>{await adp('a_del_loc',{id});await ladm();setp()},wd=async(i,c)=>{const w=c?[...new Set([...data.wd,i])]:data.wd.filter(x=>x!=i);data.wd=w;await adp('a_set',{wd:w})};
 async function rn(){const n=prompt('اسم المؤسسة',cfg.name);if(n){await adp('a_set',{name:n});await load();await ladm();render()}}
-async function cpw(){const a=prompt('كلمة السر الجديدة (6 أحرف على الأقل)');if(!a||a.length<6)return alert('كلمة السر قصيرة');if(prompt('أعد كتابتها للتأكيد')!==a)return alert('الكلمتان غير متطابقتين');const r=await adp('a_pass',{np:a});if(r.ok){pw=a;alert('تم تغيير كلمة سر المدير')}else alert(r.msg)}
+async function cpw(){const a=(prompt('كلمة السر الجديدة (6 أحرف على الأقل)')||'').trim();if(!a||a.length<6)return alert('كلمة السر قصيرة');if((prompt('أعد كتابتها للتأكيد')||'').trim()!==a)return alert('الكلمتان غير متطابقتين');const r=await adp('a_pass',{np:a});if(r.ok){pw=a;alert('تم تغيير كلمة سر المدير')}else alert(r.msg)}
 async function ng(){if(confirm('سيتغير تسلسل الرموز فقط. متابعة؟')){await adp('a_newgate');alert('تم')}}
 async function bak(){const r=await adp('a_backup');if(!r.ok)return alert(r.msg);dl('backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(r),'application/json')}
 function rst(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{try{const x=await adp('a_restore',{d:JSON.parse(r.result)});alert(x.ok?'تمت الاستعادة: '+JSON.stringify(x.added):x.msg);await load();await ladm();render()}catch{alert('ملف غير صالح')}};r.readAsText(f)}
