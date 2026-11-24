@@ -1,73 +1,86 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#2563eb"><title>الحضور الآمن</title>
+<meta name="theme-color" content="#2563eb"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<title>حضور وانصراف</title>
 <style>
 :root{--b:#2563eb;--bg:#f4f6fb;--c:#fff;--t:#0f172a;--m:#64748b;--ok:#16a34a;--no:#dc2626;--bd:#e2e8f0}
 [data-t=d]{--bg:#0b1220;--c:#131c2f;--t:#e5e7eb;--m:#94a3b8;--bd:#24304a}
-*{box-sizing:border-box}body{margin:0;font:15px system-ui,Tahoma,sans-serif;background:var(--bg);color:var(--t);padding:env(safe-area-inset-top) 0 calc(66px + env(safe-area-inset-bottom))}
-header{position:sticky;top:0;background:var(--b);color:#fff;padding:8px 10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;z-index:5}
-header .sp{flex:1}header button{background:#ffffff26;color:#fff;border:0;border-radius:8px;padding:6px 9px;font:inherit;font-size:13px;width:auto;margin:0}
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,Tahoma,sans-serif;background:var(--bg);color:var(--t);padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+body[data-m=adm]{padding-bottom:calc(66px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;background:var(--b);color:#fff;padding:10px 12px;display:flex;gap:10px;align-items:center;z-index:5}
+header img{border-radius:8px;object-fit:contain;background:#ffffff22}header b{font-size:16px}
 main{padding:10px;max-width:760px;margin:auto}.card{background:var(--c);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:10px}
-input,select,button{font:inherit;color:var(--t);background:var(--c);border:1px solid var(--bd);border-radius:8px;padding:9px;width:100%;margin:4px 0}
+input,select,button{font:inherit;color:var(--t);background:var(--c);border:1px solid var(--bd);border-radius:8px;padding:10px;width:100%;margin:4px 0}
 button{width:auto;cursor:pointer}.row{display:flex;gap:6px}.row>*{flex:1}.g{background:var(--ok);color:#fff;border:0}.r{background:var(--no);color:#fff;border:0}.p{background:var(--b);color:#fff;border:0}
-nav{position:fixed;bottom:0;inset-inline:0;background:var(--c);border-top:1px solid var(--bd);display:flex;padding-bottom:env(safe-area-inset-bottom)}
-nav a{flex:1;text-align:center;padding:8px 2px;font-size:12px;color:var(--m)}nav a.on{color:var(--b);font-weight:700}
+nav{position:fixed;bottom:0;inset-inline:0;background:var(--c);border-top:1px solid var(--bd);display:none;padding-bottom:env(safe-area-inset-bottom)}
+body[data-m=adm] nav{display:flex}nav a{flex:1;text-align:center;padding:8px 2px;font-size:12px;color:var(--m)}nav a.on{color:var(--b);font-weight:700}
 .ok{color:var(--ok)}.no{color:var(--no)}small,.m{color:var(--m)}table{width:100%;border-collapse:collapse;font-size:13px}td,th{border-bottom:1px solid var(--bd);padding:6px 3px;text-align:center}
 #upd{background:#f59e0b;color:#000;padding:8px;text-align:center}#md{position:fixed;inset:0;background:#0008;z-index:9;overflow:auto;padding:12px}
-.box{background:var(--bg);border-radius:14px;padding:12px;max-width:620px;margin:auto}.x{float:left;width:auto}.big{font-size:36px;letter-spacing:6px;text-align:center;font-weight:700}
-footer a{cursor:pointer;color:var(--b);margin:0 6px}
+.box{background:var(--bg);border-radius:14px;padding:12px;max-width:620px;margin:auto}.x{float:left;width:auto}.big{font-size:40px;letter-spacing:6px;text-align:center;font-weight:700}
+.bar{height:6px;background:var(--bd);border-radius:6px;margin:8px 0}.bar i{display:block;height:6px;background:var(--b);border-radius:6px}a{cursor:pointer;color:var(--b)}
 @media print{header,nav,#upd,.np{display:none}}
 </style></head><body>
 <div id="upd" hidden>يتوفر إصدار جديد من التطبيق. <button onclick="upd()">تحديث الآن</button></div>
-<header><img id="ic" width="34" height="34" style="border-radius:8px"><b id="tt"></b><span class="sp"></span>
-<button id="ib" hidden>تثبيت ⬇</button><button onclick="csv()">تصدير CSV</button><button onclick="emps()">👥 الموظفون</button><button onclick="shr()">↗ مشاركة التطبيق</button></header>
+<header><img id="ic" width="34" height="34"><b id="tt"></b></header>
 <main id="v"></main>
 <nav id="nv"><a data-v="home">🏠<br>اللوحة</a><a data-v="log">📋<br>السجل</a><a data-v="rep">📊<br>التقارير</a><a data-v="set">⚙️<br>الإعدادات</a></nav>
 <div id="md" hidden><div class="box"><button class="x" onclick="md.hidden=1">✕</button><div id="mb"></div></div></div>
 <script>
-const V='2.1.1',KEY='sa2',TZ='Asia/Riyadh',DEF='https://script.google.com/macros/s/AKfycbxKW4COmX3xqFt7g7HdpHGp4RYPUsjBW0JNHTvYGi3yGdKQXk_ERXbuCa7lQnVDP6Py/exec',$=i=>document.getElementById(i);
-let L=Object.assign({url:'',th:'l',tok:{},cred:{},last:''},JSON.parse(localStorage.getItem(KEY)||'{}')),cfg=null,adm=false,pw='',data=null,view='home',dp;
-const save=()=>localStorage.setItem(KEY,JSON.stringify(L));if(!L.url)L.url=DEF;
-{const u=new URLSearchParams(location.search).get('u');if(u&&u!=L.url&&/^https:\/\/script\.google\.com\//.test(u)&&(!L.url||confirm('تغيير رابط السيرفر إلى الرابط الجديد؟'))){L.url=u;save()}}
+const V='3.0.0',KEY='sa2',TZ='Asia/Riyadh',URL_='https://script.google.com/macros/s/AKfycbxKW4COmX3xqFt7g7HdpHGp4RYPUsjBW0JNHTvYGi3yGdKQXk_ERXbuCa7lQnVDP6Py/exec',$=i=>document.getElementById(i);
+const Q=new URLSearchParams(location.search),ME=Q.get('e'),GK=Q.get('g'),mode=GK?'gate':ME?'emp':'adm';document.body.dataset.m=mode;
+let L=Object.assign({th:'l',tok:{},cred:{}},JSON.parse(localStorage.getItem(KEY)||'{}')),cfg=null,adm=false,pw='',data=null,view='home',CD=null,cof=0,bk='';
+const save=()=>localStorage.setItem(KEY,JSON.stringify(L));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rh=n=>[...crypto.getRandomValues(new Uint8Array(n))].map(x=>x.toString(16).padStart(2,'0')).join('');
 const u8=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),b64=b=>btoa(String.fromCharCode(...new Uint8Array(b)));
-const mod=h=>{$('mb').innerHTML=h;$('md').hidden=false};
-async function api(a,o={}){if(!L.url)return{ok:0,msg:'اضبط رابط السيرفر من الإعدادات'};try{const r=await fetch(L.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({a,...o})});return await r.json()}catch{return{ok:0,msg:'تعذر الاتصال بالسيرفر'}}}
-const adp=(a,o={})=>api(a,{pw,...o});
-async function load(){const r=await api('cfg');cfg=r.ok?r:null;if(!r.ok&&L.url)cfg={err:r.msg}}
+const mod=h=>{$('mb').innerHTML=h;$('md').hidden=false},base=()=>location.origin+location.pathname;
+async function api(a,o={}){try{const r=await fetch(URL_,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({a,...o})});return await r.json()}catch{return{ok:0,msg:'تعذر الاتصال بالسيرفر'}}}
+const adp=(a,o={})=>api(a,{pw,...o}),ttl=()=>'حضور وانصراف'+(cfg?.name?' ( '+cfg.name+' )':'');
+async function load(){const r=await api('cfg');cfg=r.ok?r:{err:r.msg}}
 async function ladm(){const r=await adp('a_data');if(r.ok)data=r;else{adm=false;alert(r.msg)}return r.ok}
 const en=id=>(data?.emps||cfg?.emps||[]).find(x=>x.id==id)?.n||'محذوف',lbl={in:'حضور',out:'انصراف',leave:'إجازة/عذر'};
+function icon(n){const c=document.createElement('canvas');c.width=c.height=n;const x=c.getContext('2d');x.fillStyle='#2563eb';x.fillRect(0,0,n,n);x.font=n*.6+'px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('🕘',n/2,n/2+n*.03);return c.toDataURL()}
+const i1=icon(192),i2=icon(512);
+function brand(){const t=ttl(),ic=cfg?.logo||i1;$('tt').textContent=t;document.title=t;$('ic').src=ic;const k=t+ic.length;if(k==bk)return;bk=k;
+ document.querySelectorAll('link[data-g]').forEach(l=>l.remove());const big=cfg?.logo||i2;
+ [['manifest','data:application/manifest+json,'+encodeURIComponent(JSON.stringify({name:t,short_name:cfg?.name||'الحضور',start_url:location.href.split('#')[0],scope:base(),display:'standalone',background_color:'#2563eb',theme_color:'#2563eb',lang:'ar',dir:'rtl',icons:[{src:ic,sizes:'192x192',type:'image/png'},{src:big,sizes:'512x512',type:'image/png'}]}))],['apple-touch-icon',ic]].forEach(([r,h])=>{const l=document.createElement('link');l.rel=r;l.href=h;l.dataset.g=1;document.head.appendChild(l)})}
+/* ===== رمز البوابة (مشترك بين المدير وشاشة البوابة) ===== */
+async function getCodes(){const r=mode=='gate'?await api('g_codes',{gk:GK}):await adp('a_codes');if(r.ok){CD=r;cof=r.now-Date.now();tick()}else if(mode=='gate')$('v').innerHTML=`<div class=card>${esc(r.msg)}</div>`;return r.ok}
+function tick(){if(!CD||!$('gcode'))return;const t=Date.now()+cof,i=Math.floor(t/3e4)-CD.w0;if(i<0||i>=CD.codes.length-1){CD=null;getCodes();return}
+ $('gcode').textContent=CD.codes[i];const rem=30-Math.floor(t/1000)%30;$('gbar').style.width=rem/30*100+'%';$('grem').textContent=rem+' ث'}
+setInterval(tick,1000);
+const codeCard=()=>`<div class=card><b>رمز البوابة</b><div class=big id=gcode>------</div><div class=bar><i id=gbar></i></div><small>يتغيّر كل 30 ثانية · <span id=grem></span></small></div>`;
+function gate(){$('v').innerHTML=codeCard().replace('class=big','class=big style="font-size:64px"');if(!CD)getCodes();navigator.wakeLock?.request('screen').catch(()=>{})}
+/* ===== نسخة الموظف ===== */
 const gp=()=>new Promise((o,n)=>navigator.geolocation.getCurrentPosition(o,n,{enableHighAccuracy:true,timeout:15000,maximumAge:0}));
 async function geo(){const a=(await gp()).coords;await new Promise(r=>setTimeout(r,2500));const b=(await gp()).coords,w=Math.max(a.accuracy,b.accuracy);
  if(w>50)throw 'دقة الموقع ضعيفة ('+Math.round(w)+' م). اخرج لمكان مفتوح وفعّل الدقة العالية';
  if(String(b.latitude).length<8||b.accuracy===0)throw 'موقع مشبوه (محاكاة)';
  return [a,b].map(c=>({lat:c.latitude,lng:c.longitude,acc:c.accuracy}))}
 const bio=id=>navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:u8(L.cred[id])}],userVerification:'required',timeout:60000}});
-async function enroll(){const id=$('se').value,e=cfg.emps.find(x=>x.id==id);if(!e)return;const p=prompt('الرقم السري للموظف: '+e.n);if(!p)return;let cr='';
- try{const c=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:cfg.name,id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:e.n,displayName:e.n},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000}});cr=b64(c.rawId)}
- catch(x){return alert('تعذر تفعيل بصمة الجهاز. فعّل قفل الشاشة بالبصمة وافتح التطبيق عبر HTTPS.\n'+x.message)}
- const tok=rh(16),r=await api('enroll',{id,pin:p,tok});if(!r.ok)return alert(r.msg);L.tok[id]=tok;L.cred[id]=cr;save();alert('تم ربط هذا الجهاز بالموظف');await load();render()}
-async function punch(t){const id=$('se').value,m=x=>$('pm').innerHTML=x;if(!L.tok[id]||!L.cred[id])return m('<span class=no>فعّل البصمة لهذا الجهاز أولاً</span>');
- const code=$('gc').value.trim();if(!/^\d{6}$/.test(code))return m('<span class=no>اكتب رمز البوابة (6 أرقام)</span>');
+async function enroll(){const e=cfg.emps.find(x=>x.id==ME);if(!e)return;const p=(prompt('رقمك السري')||'').trim();if(!p)return;let cr='';
+ try{const c=await navigator.credentials.create({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'حضور وانصراف',id:location.hostname},user:{id:crypto.getRandomValues(new Uint8Array(16)),name:e.n,displayName:e.n},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},timeout:60000}});cr=b64(c.rawId)}
+ catch(x){return alert('تعذر تفعيل بصمة الجهاز. فعّل قفل الشاشة بالبصمة وافتح الرابط عبر HTTPS.\n'+x.message)}
+ const tok=rh(16),r=await api('enroll',{id:ME,pin:p,tok});if(!r.ok)return alert(r.msg);L.tok[ME]=tok;L.cred[ME]=cr;save();emp()}
+async function punch(t){const id=ME,m=x=>$('pm').innerHTML=x,code=$('gc').value.trim();
+ if(!/^\d{6}$/.test(code))return m('<span class=no>اكتب رمز البوابة (6 أرقام)</span>');
  m('جارٍ تحديد الموقع (نحو 4 ثوانٍ)...');let pos;try{pos=await geo()}catch(x){return m('<span class=no>'+esc(x.message||x)+'</span>')}
  try{await bio(id)}catch{return m('<span class=no>فشل التحقق بالبصمة</span>')}
- m('جارٍ التسجيل على السيرفر...');const r=await api('punch',{id,tok:L.tok[id],t,code,pos});
+ m('جارٍ التسجيل...');const r=await api('punch',{id,tok:L.tok[id],t,code,pos});
+ if(!r.ok&&/غير مربوط/.test(r.msg)){delete L.tok[id];delete L.cred[id];save();emp();return $('pm').innerHTML='<span class=no>'+esc(r.msg)+' — فعّل البصمة من جديد</span>'}
  m(`<span class=${r.ok?'ok':'no'}>${r.ok?'✔ ':''}${esc(r.msg)}</span>`);if(r.ok)$('gc').value=''}
+function emp(){if(!cfg)return $('v').innerHTML='<div class=card>جارٍ التحميل...</div>';
+ if(cfg.err)return $('v').innerHTML=`<div class=card><span class=no>${esc(cfg.err)}</span><br><button onclick="boot()">إعادة المحاولة</button></div>`;
+ const e=cfg.emps.find(x=>x.id==ME);if(!e)return $('v').innerHTML='<div class=card>رابط غير صالح. اطلب رابطاً جديداً من المدير.</div>';
+ $('v').innerHTML=`<div class=card><div style="font-size:20px;font-weight:700;text-align:center;margin-bottom:6px">${esc(e.n)}</div>`+(L.tok[ME]&&L.cred[ME]?
+ `<input id=gc inputmode=numeric maxlength=6 placeholder="رمز البوابة (6 أرقام)" autocomplete=off><div class=row><button class=g onclick="punch('in')">✅ حضور</button><button class=r onclick="punch('out')">🚪 انصراف</button></div>`:
+ `<p class=m>فعّل البصمة على هذا الجهاز (مرة واحدة) برقمك السري.</p><button class=p onclick="enroll()">🔐 تفعيل البصمة</button>`)+`<div id=pm></div></div>`}
+/* ===== نسخة المدير ===== */
 async function askAdmin(){if(adm)return true;const p=(prompt('كلمة سر المدير')||'').trim();if(!p)return false;pw=p;adm=true;if(await ladm()){render();return true}pw='';adm=false;return false}
-function home(){if(!L.url)return $('v').innerHTML='<div class=card>مرحباً 👋<br>اذهب إلى «الإعدادات» وألصق رابط السيرفر (أو افتح الرابط الذي أرسله لك المدير).</div>';
- if(!cfg)return $('v').innerHTML='<div class=card>جارٍ التحميل...</div>';if(cfg.err)return $('v').innerHTML=`<div class=card class=no>${esc(cfg.err)}<br><button onclick="boot()">إعادة المحاولة</button></div>`;
- let h='';if(!cfg.emps.length)h='<div class=card>لا يوجد موظفون بعد. سجّل دخول المدير من الإعدادات وأضفهم.</div>';
- else{const s=L.last&&cfg.emps.some(e=>e.id==L.last)?L.last:cfg.emps[0].id;h=`<div class=card><select id=se onchange="L.last=this.value;save()">${cfg.emps.map(e=>`<option value="${e.id}" ${e.id==s?'selected':''}>${esc(e.n)}</option>`).join('')}</select>
-<input id=gc inputmode=numeric maxlength=6 placeholder="رمز البوابة (6 أرقام)" autocomplete=off>
-<div class=row><button class=g onclick="punch('in')">✅ حضور</button><button class=r onclick="punch('out')">🚪 انصراف</button></div>
-<button onclick="enroll()">🔐 تفعيل البصمة لهذا الجهاز</button><div id=pm></div><small>الوقت يُسجَّل من السيرفر، ويلزم اتصال بالإنترنت.</small></div>`}
- if(adm&&data){const td=new Date().toLocaleDateString('en-CA',{timeZone:TZ}),pr=[...new Set(data.recs.filter(r=>r.k==td&&r.t=='in').map(r=>r.e))];
- h+=`<div class=card><b>رمز البوابة الحالي</b> <small>(اعرضه على شاشة داخل المدرسة)</small><div class=big id=gcode>${data.code}</div><small>يتغيّر كل 30 ثانية</small></div><div class=card><b>الحاضرون اليوم: ${pr.length}/${data.emps.length}</b><br>${pr.map(i=>esc(en(i))).join('، ')||'—'}</div>`}
- $('v').innerHTML=h}
-setInterval(async()=>{if(adm&&view=='home'&&$('gcode')){const r=await adp('a_code');if(r.ok)$('gcode').textContent=r.code}},5000);
-function need(){$('v').innerHTML=`<div class=card>هذه الصفحة للمدير.<br><button class=p onclick="askAdmin()">🔑 دخول المدير</button></div>`}
+const need=()=>{$('v').innerHTML=`<div class=card>هذه الصفحة للمدير.<br><button class=p onclick="askAdmin()">🔑 دخول المدير</button></div>`};
+function home(){if(!adm||!data)return need();const td=new Date().toLocaleDateString('en-CA',{timeZone:TZ}),pr=[...new Set(data.recs.filter(r=>r.k==td&&r.t=='in').map(r=>r.e))];
+ $('v').innerHTML=codeCard()+`<div class=card><b>الحاضرون اليوم: ${pr.length}/${data.emps.length}</b><br>${pr.map(i=>esc(en(i))).join('، ')||'—'}</div>`;if(!CD)getCodes()}
 function log(){if(!adm||!data)return need();let h=`<div class=row><button class=p onclick="man()">+ إضافة يدوية</button></div>`;
  h+=[...data.recs].reverse().slice(0,150).map(r=>`<div class=card><b>${esc(en(r.e))}</b> — ${lbl[r.t]} ${r.m?'✍️':''}<br><small>${new Date(r.ts).toLocaleString('ar-EG',{timeZone:TZ})} ${r.l?'· '+esc(r.l)+' ('+r.x+' م، دقة '+r.a+')':''} ${r.w?'· '+esc(r.w):''}</small></div>`).join('')||'<div class=card>لا سجلات</div>';$('v').innerHTML=h}
 function man(){mod(`<h3>إضافة يدوية (تُسجَّل كتعديل إداري)</h3><select id=me>${data.emps.map(e=>`<option value="${e.id}">${esc(e.n)}</option>`).join('')}</select><select id=mt><option value=in>حضور</option><option value=out>انصراف</option><option value=leave>إجازة/عذر</option></select><input id=md2 type=datetime-local><input id=mw placeholder="السبب (إلزامي)"><button class=g onclick="manOk()">حفظ</button>`)}
@@ -83,44 +96,43 @@ function rep(){if(!adm||!data)return need();const ym=window.rm||new Date().toLoc
 async function csv(){if(!await askAdmin())return;await ladm();const q=s=>'"'+String(s??'').replace(/"/g,'""')+'"',h=['الموظف','النوع','التاريخ','الموقع','البعد م','دقة م','يدوي','ملاحظة'];
  dl('attendance.csv','\ufeff'+[h,...data.recs.map(r=>[en(r.e),lbl[r.t],new Date(r.ts).toLocaleString('en-GB',{timeZone:TZ}),r.l||'',r.x??'',r.a??'',r.m?'نعم':'',r.w||''])].map(r=>r.map(q).join(',')).join('\n'),'text/csv')}
 function dl(n,c,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click()}
+async function share(url,title){try{await navigator.share({title,url})}catch(e){if(e.name=='AbortError')return;try{await navigator.clipboard.writeText(url);alert('تم نسخ الرابط')}catch{prompt('انسخ الرابط',url)}}}
 async function emps(){if(!await askAdmin())return;await ladm();
- mod(`<h3>الموظفون</h3>${data.emps.map(e=>`<div class=card><b>${esc(e.n)}</b> ${e.b?'🔐 مربوط':'⚠️ غير مفعّل'}<div class=row><input type=time value="${e.s}" onchange="ue('${e.id}','s',this.value)"><input type=time value="${e.f}" onchange="ue('${e.id}','f',this.value)"><input type=number value="${e.g}" onchange="ue('${e.id}','g',+this.value)"></div><small>بداية الدوام · نهايته · سماح بالدقائق</small><br><button onclick="unb('${e.id}')">فك ربط الجهاز</button> <button onclick="npin('${e.id}')">رقم سري جديد</button> <button class=r onclick="ud('${e.id}')">حذف</button></div>`).join('')}<button class=g onclick="addE()">+ موظف جديد</button>`)}
-const ue=async(id,k,v)=>{const r=await adp('a_emp',{emp:{id,[k]:v}});if(!r.ok)alert(r.msg)},refE=async()=>{await ladm();await emps()};
+ mod(`<h3>الموظفون</h3>${data.emps.map(e=>`<div class=card><b>${esc(e.n)}</b> ${e.b?'🔐 مربوط':'⚠️ غير مفعّل'}<div class=row><input type=time value="${e.s}" onchange="ue('${e.id}','s',this.value)"><input type=time value="${e.f}" onchange="ue('${e.id}','f',this.value)"><input type=number value="${e.g}" onchange="ue('${e.id}','g',+this.value)"></div><small>بداية الدوام · نهايته · سماح بالدقائق</small><br><button class=p onclick="share(base()+'?e=${e.id}','رابط الحضور والانصراف')">📤 مشاركة رابطه</button> <button onclick="unb('${e.id}')">فك ربط الجهاز</button> <button onclick="npin('${e.id}')">رقم سري جديد</button> <button class=r onclick="ud('${e.id}')">حذف</button></div>`).join('')}<button class=g onclick="addE()">+ موظف جديد</button><p><small>أرسل رابط الموظف له، وأعطه رقمه السري على حدة. يفعّل البصمة مرة واحدة من رابطه.</small></p>`)}
+const ue=async(id,k,v)=>{const r=await adp('a_emp',{emp:{id,[k]:v}});if(!r.ok)alert(r.msg)},refE=async()=>{await load();await ladm();await emps()};
 const unb=async id=>{await adp('a_unbind',{id});refE()},ud=async id=>{if(confirm('حذف الموظف؟')){await adp('a_del_emp',{id});refE()}};
-async function npin(id){const p=prompt('الرقم السري الجديد (4 أرقام على الأقل)');if(!p)return;const r=await adp('a_emp',{emp:{id,pin:p}});alert(r.ok?'تم':r.msg)}
-async function addE(){const n=prompt('اسم الموظف'),p=prompt('رقم سري للموظف (4 أرقام على الأقل)');if(!n||!p)return;const r=await adp('a_emp',{emp:{n,pin:p}});if(!r.ok)alert(r.msg);await load();refE()}
-function setp(){let h=`<div class=card><b>${esc(cfg?.name||'الحضور الآمن')}</b> — الإصدار ${V}<div class=row><button onclick="L.th=L.th=='d'?'l':'d';save();theme()">🌓 المظهر</button><button onclick="upd(1)">🔄 تحديث التطبيق</button></div></div>
-<div class=card><b>رابط السيرفر</b><input id=su value="${esc(L.url)}" placeholder="https://script.google.com/macros/s/.../exec"><button class=p onclick="setU()">حفظ</button></div>`;
- if(!adm)h+=`<div class=card><button class=p onclick="askAdmin().then(()=>setp())">🔑 دخول المدير</button></div>`;
- else if(data)h+=`<div class=card><b>المواقع المسموحة</b>${data.locs.map(l=>`<div>${esc(l.n)} — ${l.r} م <button class=r onclick="dloc('${l.id}')">حذف</button></div>`).join('')||'<br><small>لا توجد مواقع: أضف موقعك الحالي وأنت داخل المدرسة</small>'}<br><button class=p onclick="addL()">📍 إضافة موقعي الحالي</button></div>
-<div class=card><b>أيام العمل</b><div>${['ح','ن','ث','ر','خ','ج','س'].map((d,i)=>`<label><input type=checkbox style="width:auto" ${data.wd.includes(i)?'checked':''} onchange="wd(${i},this.checked)">${d}</label> `).join('')}</div><button onclick="rn()">✏️ اسم المؤسسة</button> <button onclick="ng()">تجديد سر البوابة</button> <button onclick="cpw()">🔑 تغيير كلمة سر المدير</button></div>
+async function npin(id){const p=(prompt('الرقم السري الجديد (4 أرقام على الأقل)')||'').trim();if(!p)return;const r=await adp('a_emp',{emp:{id,pin:p}});alert(r.ok?'تم':r.msg)}
+async function addE(){const n=(prompt('اسم الموظف')||'').trim(),p=(prompt('رقم سري للموظف (4 أرقام على الأقل)')||'').trim();if(!n||!p)return;const r=await adp('a_emp',{emp:{n,pin:p}});if(!r.ok)alert(r.msg);refE()}
+function setp(){let h=`<div class=card><b>${esc(ttl())}</b> — الإصدار ${V}<div class=row><button onclick="L.th=L.th=='d'?'l':'d';save();theme()">🌓 المظهر</button><button onclick="upd(1)">🔄 تحديث التطبيق</button></div></div>`;
+ if(!adm)h+=`<div class=card><button class=p onclick="askAdmin()">🔑 دخول المدير</button></div>`;
+ else if(data)h+=`<div class=card><b>المؤسسة</b><div class=row style="align-items:center"><img src="${esc(cfg.logo||i1)}" width=48 height=48 style="border-radius:10px;object-fit:contain;flex:0 0 48px"><div class=m>${esc(cfg.name||'لم يُحدَّد اسم المؤسسة')}</div></div><div class=row><button onclick="rn()">✏️ اسم المؤسسة</button><button onclick="$('lf').click()">🖼 الشعار</button></div><input id=lf type=file accept="image/*" hidden onchange="logo(this)">${cfg.logo?'<button onclick="rlogo()">حذف الشعار</button>':''}</div>
+<div class=card><b>الإدارة والمشاركة</b><div class=row><button class=p onclick="emps()">👥 الموظفون</button><button onclick="csv()">⬇ تصدير CSV</button></div><button onclick="gl()">📺 مشاركة رابط شاشة رمز البوابة</button><button onclick="ngk()">🔄 تجديد رابط شاشة البوابة</button></div>
+<div class=card><b>المواقع المسموحة</b>${data.locs.map(l=>`<div>${esc(l.n)} — ${l.r} م <button class=r onclick="dloc('${l.id}')">حذف</button></div>`).join('')||'<br><small>لا توجد مواقع: أضف موقعك الحالي وأنت داخل المدرسة</small>'}<br><button class=p onclick="addL()">📍 إضافة موقعي الحالي</button></div>
+<div class=card><b>أيام العمل</b><div>${['ح','ن','ث','ر','خ','ج','س'].map((d,i)=>`<label><input type=checkbox style="width:auto" ${data.wd.includes(i)?'checked':''} onchange="wd(${i},this.checked)">${d}</label> `).join('')}</div></div>
+<div class=card><b>الأمان</b><div class=row><button onclick="cpw()">🔑 تغيير كلمة سر المدير</button><button onclick="ng()">تجديد سر البوابة</button></div></div>
 <div class=card><b>نسخ احتياطي</b><div class=row><button onclick="bak()">⬇ نسخة كاملة من السيرفر</button></div><input type=file accept=.json onchange="rst(this)"><small>اختر ملف نسخة لاستعادتها (تُضاف البيانات الناقصة فقط)</small></div>`;
- h+=`<div class=card><a onclick="page('t')">الشروط</a> · <a onclick="page('p')">الخصوصية</a> · <a onclick="page('a')">من نحن</a> · <a onclick="page('c')">اتصل بنا</a></div>`+(adm?`<button onclick="adm=false;pw='';data=null;render()">تسجيل خروج المدير</button>`:'');$('v').innerHTML=h}
-async function setU(){const u=$('su').value.trim();if(!/^https:\/\/script\.google\.com\//.test(u))return alert('الرابط غير صحيح');L.url=u;save();mf();await boot();alert('تم الحفظ')}
-async function addL(){try{const c=(await gp()).coords,n=prompt('اسم الموقع'),r=+prompt('نصف القطر بالمتر (مثلاً 80)','80');if(n&&r>=20){const x=await adp('a_loc',{loc:{n,lat:c.latitude,lng:c.longitude,r}});if(!x.ok)alert(x.msg);await ladm();setp()}}catch{alert('تعذر تحديد الموقع')}}
+ h+=`<div class=card><a onclick="page('t')">الشروط</a> · <a onclick="page('p')">الخصوصية</a> · <a onclick="page('a')">من نحن</a> · <a onclick="page('c')">اتصل بنا</a></div>`+(adm?`<button onclick="adm=false;pw='';data=null;CD=null;render()">تسجيل خروج المدير</button>`:'');$('v').innerHTML=h}
+async function addL(){try{const c=(await gp()).coords,n=(prompt('اسم الموقع')||'').trim(),r=+prompt('نصف القطر بالمتر (مثلاً 80)','80');if(n&&r>=20){const x=await adp('a_loc',{loc:{n,lat:c.latitude,lng:c.longitude,r}});if(!x.ok)alert(x.msg);await ladm();setp()}}catch{alert('تعذر تحديد الموقع')}}
 const dloc=async id=>{await adp('a_del_loc',{id});await ladm();setp()},wd=async(i,c)=>{const w=c?[...new Set([...data.wd,i])]:data.wd.filter(x=>x!=i);data.wd=w;await adp('a_set',{wd:w})};
-async function rn(){const n=prompt('اسم المؤسسة',cfg.name);if(n){await adp('a_set',{name:n});await load();await ladm();render()}}
+async function rn(){const n=prompt('اسم المؤسسة',cfg.name||'');if(n===null)return;await adp('a_set',{name:n.trim()});await load();render()}
+function logo(i){const f=i.files[0];if(!f)return;const im=new Image();im.onload=async()=>{for(const n of[160,128,96,64]){const c=document.createElement('canvas');c.width=c.height=n;const x=c.getContext('2d'),k=n/Math.max(im.width,im.height),w=im.width*k,h=im.height*k;x.drawImage(im,(n-w)/2,(n-h)/2,w,h);const d=c.toDataURL('image/png');
+ if(d.length<45000){const r=await adp('a_set',{logo:d});if(r.ok){await load();render()}else alert(r.msg);return}}alert('الصورة معقدة جداً، اختر شعاراً أبسط')};im.onerror=()=>alert('ملف الصورة غير صالح');im.src=URL.createObjectURL(f)}
+async function rlogo(){if(confirm('حذف الشعار؟')){await adp('a_set',{logo:''});await load();render()}}
 async function cpw(){const a=(prompt('كلمة السر الجديدة (6 أحرف على الأقل)')||'').trim();if(!a||a.length<6)return alert('كلمة السر قصيرة');if((prompt('أعد كتابتها للتأكيد')||'').trim()!==a)return alert('الكلمتان غير متطابقتين');const r=await adp('a_pass',{np:a});if(r.ok){pw=a;alert('تم تغيير كلمة سر المدير')}else alert(r.msg)}
-async function ng(){if(confirm('سيتغير تسلسل الرموز فقط. متابعة؟')){await adp('a_newgate');alert('تم')}}
+async function ng(){if(confirm('تجديد سر البوابة يغيّر تسلسل الرموز فقط. متابعة؟')){await adp('a_newgate');CD=null;alert('تم')}}
+async function gl(){const r=await adp('a_gk');if(!r.ok)return alert(r.msg);share(base()+'?g='+r.gk,'شاشة رمز البوابة')}
+async function ngk(){if(confirm('سيتوقف الرابط القديم لشاشة البوابة. متابعة؟')){const r=await adp('a_newgk');alert(r.ok?'تم. شارك الرابط الجديد من زر المشاركة':r.msg)}}
 async function bak(){const r=await adp('a_backup');if(!r.ok)return alert(r.msg);dl('backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(r),'application/json')}
 function rst(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{try{const x=await adp('a_restore',{d:JSON.parse(r.result)});alert(x.ok?'تمت الاستعادة: '+JSON.stringify(x.added):x.msg);await load();await ladm();render()}catch{alert('ملف غير صالح')}};r.readAsText(f)}
 const PG={t:['شروط الاستخدام','التطبيق لتسجيل الحضور والانصراف داخل النطاق المحدد فقط. يمنع استخدام برامج تزوير الموقع أو تسجيل الحضور بدلاً عن الغير، وتُعد المحاولة مخالفة. تحتفظ الإدارة بحق مراجعة السجلات وتعديلها مع توثيق السبب.'],p:['سياسة الخصوصية','تُحفظ السجلات في ملف Google Sheets تملكه الإدارة. يُقرأ موقعك لحظة التسجيل فقط. بصمتك لا تغادر جهازك (يديرها نظام الهاتف) ولا يحصل التطبيق عليها.'],a:['من نحن','نظام حضور وانصراف بالبصمة والموقع الجغرافي، يتم التحقق من كل تسجيل على السيرفر.'],c:['اتصل بنا','للدعم أو الملاحظات تواصل مع إدارة المؤسسة أو مطوّر التطبيق.']};
 const page=k=>mod(`<h3>${PG[k][0]}</h3><p>${PG[k][1]}</p>`);
-function render(){document.querySelectorAll('#nv a').forEach(a=>a.classList.toggle('on',a.dataset.v==view));({home,log,rep,set:setp})[view]();const n=cfg?.name||'الحضور الآمن';$('tt').textContent=n;document.title=n;
- $('v').insertAdjacentHTML('beforeend',`<footer class=m style="text-align:center;margin:14px 0"><a onclick="page('t')">الشروط</a><a onclick="page('p')">الخصوصية</a><a onclick="page('a')">من نحن</a><a onclick="page('c')">اتصل بنا</a></footer>`)}
+function render(){brand();if(mode=='gate')return gate();if(mode=='emp')return emp();
+ document.querySelectorAll('#nv a').forEach(a=>a.classList.toggle('on',a.dataset.v==view));({home,log,rep,set:setp})[view]()}
 const theme=()=>{document.documentElement.dataset.t=L.th;render()};
 document.querySelectorAll('#nv a').forEach(a=>a.onclick=()=>{view=a.dataset.v;render()});
-const base=()=>location.origin+location.pathname+(L.url?'?u='+encodeURIComponent(L.url):'');
-const shr=async()=>{try{await navigator.share({title:cfg?.name||'الحضور الآمن',url:base()})}catch{navigator.clipboard?.writeText(base());alert('تم نسخ رابط التطبيق')}};
-const sa=()=>matchMedia('(display-mode:standalone)').matches||navigator.standalone,ibs=()=>$('ib').hidden=sa()||(!dp&&!/iphone|ipad/i.test(navigator.userAgent));
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;ibs()});addEventListener('appinstalled',()=>{dp=null;$('ib').hidden=true});
-$('ib').onclick=async()=>{if(dp){dp.prompt();await dp.userChoice;dp=null;ibs()}else alert('في الآيفون: زر المشاركة ثم «إضافة إلى الشاشة الرئيسية»')};
-async function chk(){try{const t=await(await fetch(location.origin+location.pathname,{cache:'no-store'})).text(),m=t.match(/const V='([\d.]+)'/);if(m&&m[1]!=V){$('upd').hidden=false;return 1}}catch{}return 0}
+async function chk(){try{const t=await(await fetch(base(),{cache:'no-store'})).text(),m=t.match(/const V='([\d.]+)'/);if(m&&m[1]!=V){if(mode=='gate')return upd();$('upd').hidden=false;return 1}}catch{}return 0}
 async function upd(m){if(m&&!await chk())return alert('أنت على أحدث إصدار');for(const k of await caches.keys())await caches.delete(k);for(const r of(await navigator.serviceWorker?.getRegistrations?.())||[])await r.unregister();location.reload()}
-function icon(n){const c=document.createElement('canvas');c.width=c.height=n;const x=c.getContext('2d');x.fillStyle='#2563eb';x.fillRect(0,0,n,n);x.font=n*.6+'px sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillText('🕘',n/2,n/2+n*.03);return c.toDataURL()}
-const i1=icon(192),i2=icon(512);$('ic').src=i1;
-function mf(){document.querySelectorAll('link[data-g]').forEach(l=>l.remove());[['manifest','data:application/manifest+json,'+encodeURIComponent(JSON.stringify({name:cfg?.name||'الحضور الآمن',short_name:'الحضور',start_url:base(),scope:location.origin+location.pathname,display:'standalone',background_color:'#2563eb',theme_color:'#2563eb',lang:'ar',dir:'rtl',icons:[{src:i1,sizes:'192x192',type:'image/png'},{src:i2,sizes:'512x512',type:'image/png'}]}))],['apple-touch-icon',i1]].forEach(([r,h])=>{const l=document.createElement('link');l.rel=r;l.href=h;l.dataset.g=1;document.head.appendChild(l)})}
 if('serviceWorker' in navigator&&location.protocol=='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
-async function boot(){await load();mf();render()}
-document.documentElement.dataset.t=L.th;ibs();mf();render();boot();chk();if(!L.url){view='set';render()}
+async function boot(){await load();render()}
+document.documentElement.dataset.t=L.th;render();boot();chk();
 </script></body></html>
